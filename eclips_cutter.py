@@ -63,11 +63,11 @@ except ImportError:
 # Configuration defaults (EDIT / calibrate these against your machine)
 # ----------------------------------------------------------------------
 
-DEFAULT_UNITS_PER_INCH = 1370.0   # CALIBRATED from real test cut: requested 4in,
+DEFAULT_UNITS_PER_INCH = 1200   # CALIBRATED from real test cut: requested 4in,
                                    # measured 2.92in @ 1000 units/in => 1000*(4/2.92)≈1370.
                                    # Re-verify with your own test cut; this is one data point.
-DEFAULT_SPEED = 80                 # from capture: !ASP80,55 seen at job start
-DEFAULT_PRESSURE = 55              # from capture: !ASP80,55 seen at job start
+DEFAULT_SPEED = 20                 # from capture: !ASP80,55 seen at job start
+DEFAULT_PRESSURE = 70              # from capture: !ASP80,55 seen at job start
 DEFAULT_FLATNESS_STEPS = 12        # bezier/arc flattening resolution
 DEFAULT_INTER_COMMAND_DELAY = 0.03 # seconds; capture showed ~30ms between PD commands
 DEFAULT_BAUD = 9600                # CDC-ACM devices usually ignore baud, but pyserial needs a value

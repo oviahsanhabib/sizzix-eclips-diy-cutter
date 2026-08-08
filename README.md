@@ -4,6 +4,8 @@ eCAL talking to your Sizzix eclips. The machine speaks HPGL (the same
 open, standard plotter language used by Roland/Graphtec/HP devices), plus
 a few Craft Edge vendor extension commands.
  
+<img width="756" height="709" alt="image" src="https://github.com/user-attachments/assets/84e935ba-f6ba-4058-92c4-1fcbd1f10f54" />
+
 **This is unverified, reverse-engineered protocol. Test on scrap material
 first.** You are working with your own hardware at your own risk.
  

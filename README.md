@@ -1,93 +1,115 @@
-# sizzix eclips diy cutter
-A free SVG-to-eclips sender, built by reverse-engineering a USB capture of
-eCAL talking to your Sizzix eclips. The machine speaks HPGL (the same
-open, standard plotter language used by Roland/Graphtec/HP devices), plus
-a few Craft Edge vendor extension commands.
- 
-<img width="756" height="709" alt="image" src="https://github.com/user-attachments/assets/84e935ba-f6ba-4058-92c4-1fcbd1f10f54" />
+# eclips DIY Cutter
 
-**This is unverified, reverse-engineered protocol. Test on scrap material
-first.** You are working with your own hardware at your own risk.
- 
+An unofficial SVG → HPGL sender for the Sizzix eclips cutting machine, built
+from a reverse-engineered USB capture of eCAL. Includes a GUI with a mat
+preview, and a CLI for scripting.
+
+> ⚠️ **This protocol is reverse-engineered and unverified.** Test on scrap
+> material first, at low speed, before trusting it on real material. You are
+> responsible for what you send to your own hardware.
+
 ## Setup (Windows)
- 
-1. Install Python 3 from python.org if you don't have it (check "Add to PATH" during install).
+
+1. Install Python 3 from [python.org](https://www.python.org/) if you don't
+   have it (check **"Add to PATH"** during install).
 2. Open Command Prompt in this folder and run:
-```
+
+   ```
    pip install pyserial svgelements
-```
+   ```
+
 3. Run the tool:
-```
+
+   ```
    python eclips_cutter.py
-```
-   This opens the GUI. Or use CLI mode — run `python eclips_cutter.py --help`.
- 
-## First-time calibration (important!)
- 
-The single biggest unknown is **how many machine units = 1 inch**. The
-capture showed coordinates like `7723,2617` for what looked like a small
-(roughly 1-2 inch) shape, so the tool defaults to a guess of **1000 units
-per inch**. This WILL be wrong until you calibrate it:
- 
-1. In eCAL, cut a simple 2-inch square on scrap material, capturing the
-   USB traffic with Wireshark+USBPcap while you do it (same way we captured
-   the sample you sent me).
-2. Look at the `PU`/`PD` coordinates in that capture. If the square is
-   2 inches (measured edge to edge) and the coordinates span, say, 2000
-   units, then you have 1000 units/inch. If they span 4000 units, you have
-   2000 units/inch, etc.
-3. Update the "Machine units per inch" field in the GUI (or `--units-per-inch`
-   on the CLI) to match.
-4. Also check whether your cut comes out mirrored or upside-down compared
-   to your SVG — if so, enable "Flip Y axis."
+   ```
+
 ## Usage
- 
-**GUI:**
-1. "Open SVG..." — pick your design file.
-2. Set units-per-inch (after calibration), speed, pressure, offsets.
-3. Click "1. Generate HPGL" — review the commands in the log box.
-4. Click "2. Save to file" if you just want the raw HPGL text (e.g. to
-   compare byte-for-byte against a real eCAL capture for debugging).
-5. Load material, select your COM port, click "3. Send to Machine" —
-   you'll get a confirmation prompt before anything is actually sent.
-**CLI:**
+
+### GUI mode
+
+Just run the script with no arguments:
+
 ```
-# List available COM ports
-python eclips_cutter.py --list-ports
- 
-# Dry run — see the generated commands without sending
-python eclips_cutter.py --svg design.svg --dry-run --units-per-inch 1000
- 
-# Save HPGL to a file for inspection
-python eclips_cutter.py --svg design.svg --save design.hpgl --units-per-inch 1000
- 
-# Actually send to the machine (asks for confirmation)
-python eclips_cutter.py --svg design.svg --send --port COM3 --units-per-inch 1000 --speed 80 --pressure 55
+python eclips_cutter.py
 ```
- 
-## Known limitations / things that still need verification
- 
-- **Coordinate scale (units/inch)** — needs your calibration, see above.
-- **Y-axis direction** — SVG is Y-down; unclear yet if the machine matches
-  or is mirrored. Toggle "Flip Y" if your first test cut comes out upside down.
-- **`!ASP<a>,<b>;` meaning** — appears to be speed/pressure, sent multiple
-  times with different values within a single job (possibly ramping speed
-  at path start/end). This tool sends it once at the start; if cut quality
-  is inconsistent on long curves, this is the first thing to investigate
-  further with more captures.
-- **`!GBX;` / `!GBY;`** — "get boundary" queries the machine sends; this
-  tool doesn't query or use them (not required to send a job, based on
-  the capture).
-- **`!L;` / `!MS;`** — purpose still unclear; not sent by this tool. If jobs
-  fail to start on the real machine, these might be required handshake
-  steps — worth investigating with more captures (idle machine before a
-  job, blade-change events, etc.)
-- **No pen/tool switching, no scoring-only mode, no print-and-cut registration**
-  — this only does basic single-pass vector cutting.
-## If something doesn't work
- 
-Capture the traffic from a real eCAL job that's similar to what you're
-trying to do (same rough shape complexity), and compare it line-by-line
-against what this tool generates for the same SVG. Send me both and I can
-help pinpoint the difference.
- 
+
+1. Click **Open SVG...** and choose your design — it auto-generates a
+   preview on the mat.
+2. Check **Calibration & Settings** (units per inch, speed, pressure,
+   offsets) and the **Mat Preview** panel on the right to confirm the design
+   size and position look correct before cutting.
+3. Pick your **COM Port** under Machine Connection and refresh if needed.
+4. Click **3. Send to Machine** to cut, or **2. Save to file** to export the
+   generated HPGL without sending it.
+
+### CLI mode
+
+```
+python eclips_cutter.py --svg design.svg --port COM3 --dry-run
+python eclips_cutter.py --svg design.svg --port COM3 --send
+```
+
+Useful flags:
+
+| Flag | Description |
+|---|---|
+| `--svg` | Path to the SVG file to cut |
+| `--port` | COM port, e.g. `COM3` |
+| `--units-per-inch` | SVG→machine scale factor (default `1365.33`, see Calibration below) |
+| `--speed` / `--pressure` | Cut speed and blade pressure |
+| `--offset-x` / `--offset-y` | Machine-unit offset applied to every point (default `50` / `550`) |
+| `--flip-y` | Mirror the Y axis, if cuts come out upside-down |
+| `--dry-run` | Print/save the generated HPGL without sending |
+| `--send` | Actually send the job to the machine |
+| `--save FILE` | Save generated HPGL to a file |
+| `--list-ports` | List available COM ports |
+| `--load-unload` | Toggle the mat load/unload sequence, then exit |
+| `--laser-on` / `--laser-off` | Toggle the boundary-preview laser, then exit |
+| `--auto-unload` | Send the load/unload toggle automatically after the job finishes |
+| `--ack-count N` | Wait for a response after each of the first N commands (handshake only) |
+
+## Calibration
+
+Two constants at the top of the script matter most, and both were tuned
+empirically against a real machine rather than derived from a spec sheet —
+trust a test result over the theory if your own SVGs don't match:
+
+- **`DEFAULT_UNITS_PER_INCH` (1365.33)** — the SVG→machine coordinate scale
+  factor used when generating cut commands. Confirmed accurate against both
+  4" and 6" test designs.
+- **`MACHINE_UNITS_PER_INCH` (1024)** — the machine's true physical
+  resolution, used only to convert machine units back into real-world inches
+  for the on-screen mat preview.
+- **`DEFAULT_OFFSET_X` / `DEFAULT_OFFSET_Y` (50 / 550)** — machine-unit
+  offset that aligns the cut with your mat's true physical home position.
+  This is mat/machine-specific calibration, not a simple inch-based margin.
+  The mat preview treats these defaults as its zero point, so a design cut
+  with the default offsets previews flush against the top-left corner,
+  matching where it actually lands. Changing the offset fields shifts the
+  design in the preview accordingly.
+
+If your cuts come out the wrong size or in the wrong spot, recalibrate these
+against your own machine with a simple known-size test shape before cutting
+anything you care about.
+
+## Command reference (confirmed from USB capture)
+
+| Command | Meaning |
+|---|---|
+| `IN;` | Initialize |
+| `SP1;` | Select pen/tool 1 |
+| `PU x,y;` | Pen up, travel move to x,y |
+| `PD x,y;` | Pen down, cutting move to x,y |
+| `PG;` | End of page / finish job |
+| `!ASP<a>,<b>;` | Speed/pressure setting, sent before moves |
+| `!GBX;` / `!GBY;` | Query boundary X / Y |
+| `!PON;` / `!POF;` | Enable / disable blade motor before cutting / travel moves |
+| `!SBP x,y;` | Set beam position (laser pointer target) |
+| `!LON;` / `!LOF;` | Laser on / off (boundary preview) |
+| `!L;` | Load/unload mat toggle (starts motor motion) |
+| `!MS;` | Sent ~11s after `!L;` — confirms/finalizes the load/unload motion |
+
+Some details (Y-axis direction, ACK handshaking, multi-`!ASP` behavior) are
+still best guesses — see the comments in `eclips_cutter.py` for specifics and
+verify against your own USB captures if you run into issues.

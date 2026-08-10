@@ -1,4 +1,4 @@
-# sizzix-eclips-diy-cutter
+# sizzix eclips diy cutter
 A free SVG-to-eclips sender, built by reverse-engineering a USB capture of
 eCAL talking to your Sizzix eclips. The machine speaks HPGL (the same
 open, standard plotter language used by Roland/Graphtec/HP devices), plus

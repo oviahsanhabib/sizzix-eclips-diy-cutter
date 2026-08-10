@@ -8,6 +8,17 @@ preview, and a CLI for scripting.
 > material first, at low speed, before trusting it on real material. You are
 > responsible for what you send to your own hardware.
 
+## Tested Hardware
+
+- **Machine:** Sizzix eclips
+- **Mat:** Cricut StandardGrip Adhesive Cutting Mat, 12" x 12"
+
+The default calibration values in this script (`DEFAULT_UNITS_PER_INCH`,
+`DEFAULT_OFFSET_X`/`DEFAULT_OFFSET_Y`) were tuned against this exact
+combination. If you're using a different mat or machine, recalibrate with a
+known-size test cut before trusting it on real material — see
+[Calibration](#calibration) below.
+
 ## Setup (Windows)
 
 1. Install Python 3 from [python.org](https://www.python.org/) if you don't

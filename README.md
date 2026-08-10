@@ -1,4 +1,4 @@
-# eclips DIY Cutter
+# Sizzix eClips DIY Cutter
 
 An unofficial SVG → HPGL sender for the Sizzix eclips cutting machine, built
 from a reverse-engineered USB capture of eCAL. Includes a GUI with a mat
@@ -7,6 +7,8 @@ preview, and a CLI for scripting.
 > ⚠️ **This protocol is reverse-engineered and unverified.** Test on scrap
 > material first, at low speed, before trusting it on real material. You are
 > responsible for what you send to your own hardware.
+> 
+<img width="1181" height="792" alt="image" src="https://github.com/user-attachments/assets/c7315bb0-cc59-46d2-bf18-50dcd59aee1a" />
 
 ## Tested Hardware
 

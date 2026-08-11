@@ -21,21 +21,31 @@ combination. If you're using a different mat or machine, recalibrate with a
 known-size test cut before trusting it on real material — see
 [Calibration](#calibration) below.
 
+
 ## Setup (Windows)
 
-1. Install Python 3 from [python.org](https://www.python.org/) if you don't
-   have it (check **"Add to PATH"** during install).
-2. Open Command Prompt in this folder and run:
+1. **Install the required driver**
 
-   ```
+   Before installing Python, make sure the required device driver is installed and recognized by Windows. Connect your device and verify that it appears correctly in **Device Manager** without any warning or error icons.
+
+2. **Install Python 3**
+
+   Install Python 3 from [python.org](https://www.python.org/) if you don't have it. During installation, make sure to check **"Add Python to PATH"**.
+
+3. **Install the required Python packages**
+
+   Open **Command Prompt** in this folder and run:
+
+   ```bash
    pip install pyserial svgelements
    ```
 
-3. Run the tool:
+4. **Run the tool**
 
-   ```
+   ```bash
    python eclips_cutter.py
    ```
+
 
 ## Usage
 

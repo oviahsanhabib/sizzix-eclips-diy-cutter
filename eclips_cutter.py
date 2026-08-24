@@ -91,7 +91,7 @@ MACHINE_UNITS_PER_INCH = 1024      # The eclips's actual physical resolution (un
                                     # e.g. for the mat preview or the "design size" readout.
 
 DEFAULT_OFFSET_X = 50              # CONFIRMED by user testing: with these offsets, cuts land
-DEFAULT_OFFSET_Y = 550              # exactly at the edge of the vinyl sheet on their mat. This
+DEFAULT_OFFSET_Y = 600              # exactly at the edge of the vinyl sheet on their mat. This
                                     # is empirical mat/machine-home calibration, not a simple
                                     # inch-based margin -- don't try to derive it from
                                     # MACHINE_UNITS_PER_INCH, trust the test result (same
@@ -365,7 +365,7 @@ def run_cli():
                          help="Just toggle the mat load/unload command and exit (needs --port)")
     parser.add_argument("--auto-unload", action="store_true",
                          help="Send the load/unload toggle right after the job finishes")
-    parser.add_argument("--ack-count", type=int, default=3,
+    parser.add_argument("--ack-count", type=int, default=6,
                          help="Wait for a response after each of the first N commands "
                               "(the init/handshake sequence). Default 3. Use 0 to disable.")
     parser.add_argument("--laser-on", action="store_true",
